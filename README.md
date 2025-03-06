@@ -78,16 +78,16 @@ python app.py
 ## 🖼️ Project Screenshots
 
 ### 🏠 Homepage
-![Homepage](images/homepage.png)
+![Homepage](images/homepage.jpg)
 
 ### 🛍️ Products
-![Products](images/products.png)
+![Products](images/products.jpg)
 
 ### 🏷️ Product Detail
-![Product Detail](images/product-detail.png)
+![Product Detail](images/product-detail.jpg)
 
 ### 🛒 Cart Page & Product Recommendations
-![Cart Page](images/cart-1.png)
+![Cart Page](images/cart-1.jpg)
 
 ![Cart Page-2](images/cart-2.png)
 
