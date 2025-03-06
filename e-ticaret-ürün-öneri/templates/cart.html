@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Kartlar için hizalamayı ve boyutları düzenleyelim */
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+        width: 100%;
+        height: 200px; /* Görsellerin boyutunu sabitleyelim */
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    /* Butonlar için animasyon efekti */
+    .btn {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: scale(1.05); /* Hover efekti ile buton büyümesi */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsive düzenlemeler */
+    @media (max-width: 768px) {
+        .col-md-3 {
+            max-width: 100%;
+        }
+    }
+
+</style>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Shopping Cart</h2>
+
+    {% if cart_items %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <img src="{{ item.product.img_link }}" alt="{{ item.product.product_name }}" class="img-fluid rounded" style="max-width: 50px; height: 50px;" onerror="this.src='path/to/default-image.jpg';">
+                            {{ item.product.product_name }}
+                        </td>
+                        <td>₹{{ item.product.discounted_price }}</td>
+                        <td>
+                            <a href="{{ url_for('remove_from_cart', product_id=item.product_id) }}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i> Remove
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-info">
+                        <td colspan="1"><strong>Total:</strong></td>
+                        <td colspan="2"><strong>₹{{ total }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {% if recommended %}
+        <h3 class="mt-5" style="text-align:center;margin:45px">Recommended Products</h3>
+        <div class="row">
+            {% for product in recommended %}
+            <div class="col-md-3 col-sm-6 mb-4 d-flex">
+                <div class="card shadow-sm w-100">
+                    <img src="{{ product.img_link }}" class="card-img-top" alt="{{ product.product_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.product_name }}</h5>
+                        <p class="card-text">₹{{ product.discounted_price }}</p>
+                        <a href="/add_to_cart/{{ product.product_id }}" class="btn btn-success btn-block">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% else %}
+        <p class="alert alert-warning">Your cart is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
+<script>
+    // Sayfa yüklendiğinde animasyon başlatma
+    window.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.classList.add('fade-in'); // Her kart için fade-in animasyonu başlatılacak
+        });
+    });
+
+    // CSS animasyonu için fade-in sınıfı
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+</script>

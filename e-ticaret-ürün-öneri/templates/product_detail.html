@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .product-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .product-image-section {
+        padding: 2rem;
+        background: #f8f9fa;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 500px;
+        object-fit: contain;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .product-image:hover {
+        transform: scale(1.02);
+    }
+
+    .product-info-section {
+        padding: 2rem;
+    }
+
+    .product-title {
+        font-size: 1.8rem;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .product-category {
+        display: inline-block;
+        background: #e2e8f0;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        color: #4a5568;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .price-section {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: #f7fafc;
+        border-radius: 12px;
+    }
+
+    .discounted-price {
+        font-size: 2rem;
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    .original-price {
+        color: #a0aec0;
+        text-decoration: line-through;
+        margin-left: 1rem;
+    }
+
+    .discount-badge {
+        background: #48bb78;
+        color: white;
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-left: 1rem;
+    }
+
+    .rating-section {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        gap: 1rem;
+    }
+
+    .rating-stars {
+        color: #ecc94b;
+        font-size: 1.2rem;
+    }
+
+    .rating-count {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .product-description {
+        color: #4a5568;
+        line-height: 1.6;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: #f7fafc;
+        border-radius: 12px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-add-cart {
+        flex: 2;
+        padding: 1rem;
+        background: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    .btn-add-cart:hover {
+        background: #3182ce;
+    }
+
+    .btn-amazon {
+        flex: 1;
+        padding: 1rem;
+        background: #f6ad55;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    .btn-amazon:hover {
+        background: #ed8936;
+    }
+
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .product-image {
+            height: 300px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="product-container">
+    <div class="product-card">
+        <div class="product-grid">
+            <div class="product-image-section">
+                <img
+                    id="product-img-{{ product.id }}"
+                    src="{{ product.img_link }}"
+                    class="product-image"
+                    alt="{{ product.product_name }}"
+                    onerror="this.onerror=null;this.src='https://i5.walmartimages.com/asr/03319cbe-7f61-42d3-afa9-4c2ac5e2342e.2b236bcbb74ce2f85e3d3160d9b52236.jpeg';"
+                >
+            </div>
+
+            <div class="product-info-section">
+                <h1 class="product-title">{{ product.product_name }}</h1>
+                <span class="product-category">{{ product.category }}</span>
+
+                <div class="price-section">
+                    <span class="discounted-price">₹{{ product.discounted_price }}</span>
+                    <span class="original-price">₹{{ product.actual_price }}</span>
+                    {% set discount = ((product.actual_price - product.discounted_price) / product.actual_price * 100) | round %}
+                    <span class="discount-badge">{{ discount }}% OFF</span>
+                </div>
+
+                <div class="rating-section">
+                    <div class="rating-stars">
+                        {% for i in range(5) %}
+                            {% if i < product.rating | int %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-count">{{ product.rating }} ({{ product.rating_count | default(0) }} ratings)</span>
+                </div>
+
+                <div class="product-description">
+                    {{ product.about_product }}
+                </div>
+
+                <div class="action-buttons">
+                    <a href="/add_to_cart/{{ product.product_id }}" class="btn btn-add-cart">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </a>
+                    <a href="{{ product.product_link }}" class="btn btn-amazon" target="_blank">
+                        <i class="fab fa-amazon"></i> View on Amazon
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome için CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}

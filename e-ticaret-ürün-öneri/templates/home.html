@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Genel stil ayarları */
+    .products-container {
+        padding: 2rem;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 1.5rem;
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        height: 2.6rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+
+    .view-details-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .view-details-btn:hover {
+        background-color: #3182ce;
+        color: white;
+    }
+
+    /* Sayfalama stil ayarları */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem 0;
+        background: white;
+        padding: 1rem;
+        border-radius: 50px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination-btn {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        border: none;
+        background-color: transparent;
+        color: #4a5568;
+        font-weight: 500;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .pagination-btn.active {
+        background-color: #4299e1;
+        color: white;
+        font-weight: 600;
+    }
+
+    .pagination-btn:hover:not(.active) {
+        background-color: #edf2f7;
+        color: #2d3748;
+    }
+
+    .pagination-nav {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        background-color: #f7fafc;
+        color: #4a5568;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pagination-nav:hover {
+        background-color: #edf2f7;
+        color: #2d3748;
+    }
+
+    .pagination-ellipsis {
+        color: #4a5568;
+        padding: 0 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+        .pagination-container {
+            padding: 0.5rem;
+            border-radius: 25px;
+        }
+
+        .pagination {
+            gap: 0.25rem;
+        }
+
+        .pagination-btn {
+            min-width: 35px;
+            height: 35px;
+            font-size: 0.9rem;
+        }
+
+        .pagination-nav {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+    }
+
+     /* Filtre sidebar stil ayarları */
+    .filter-sidebar {
+        flex: 0 0 280px;
+        height: fit-content;
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        top: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .filter-input {
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: #4299e1;
+    }
+
+    .filter-select {
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background-color: white;
+    }
+
+    .filter-btn {
+        padding: 0.75rem;
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .filter-btn:hover {
+        background-color: #3182ce;
+    }
+</style>
+<aside class="filter-sidebar">
+        <div class="filter-section">
+            <h2 class="filter-title">Filters</h2>
+            <form method="GET" action="{{ url_for('home') }}" class="filter-form">
+                <div class="filter-group">
+                    <label class="filter-label" for="product_name">Product Name</label>
+                    <input type="text" id="product_name" name="product_name"
+                           value="{{ request.args.get('product_name', '') }}"
+                           class="filter-input"
+                           placeholder="Search products...">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="category">Category</label>
+                    <select name="category" id="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if request.args.get('category') == cat %}selected{% endif %}>
+                                {{ cat }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="min_price">Price Range</label>
+                    <input type="number" id="min_price" name="min_price"
+                           value="{{ request.args.get('min_price', '') }}"
+                           class="filter-input"
+                           placeholder="Min Price">
+                    <input type="number" id="max_price" name="max_price"
+                           value="{{ request.args.get('max_price', '') }}"
+                           class="filter-input"
+                           placeholder="Max Price">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="min_rating">Minimum Rating</label>
+                    <input type="number" id="min_rating" name="min_rating"
+                           value="{{ request.args.get('min_rating', '') }}"
+                           class="filter-input"
+                           step="0.1" min="0" max="5"
+                           placeholder="Min Rating (0-5)">
+                </div>
+
+                <button type="submit" class="filter-btn">Apply Filters</button>
+            </form>
+        </div>
+    </aside>
+
+
+<div class="products-container">
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <img
+                id="product-img-{{ product.id }}"
+                src="{{ product.img_link }}"
+                class="product-image"
+                alt="{{ product.product_name }}"
+                onerror="this.onerror=null;this.src='https://i5.walmartimages.com/asr/03319cbe-7f61-42d3-afa9-4c2ac5e2342e.2b236bcbb74ce2f85e3d3160d9b52236.jpeg';"
+            >
+            <div class="product-info">
+                <h3 class="product-title">{{ product.product_name }}</h3>
+                <p class="product-price">₹{{ product.discounted_price }}</p>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="view-details-btn">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination-container">
+        <div class="pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('home', page=pagination.page-1) }}" class="pagination-nav">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Prev
+            </a>
+            {% endif %}
+
+            {% for page_num in pagination.pages %}
+                {% if page_num == pagination.page %}
+                    <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                    {% if page_num == '...' %}
+                        <span class="pagination-ellipsis">...</span>
+                    {% else %}
+                        <a href="{{ url_for('home', page=page_num) }}" class="pagination-btn">{{ page_num }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+            <a href="{{ url_for('home', page=pagination.page+1) }}" class="pagination-nav">
+                Next
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Lazy loading for images
+    const images = document.querySelectorAll('.product-image');
+    const imageOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px 50px 0px"
+    };
+
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                }
+                observer.unobserve(img);
+            }
+        });
+    }, imageOptions);
+
+    images.forEach(img => imageObserver.observe(img));
+});
+</script>
+{% endblock %}
