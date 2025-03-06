@@ -80,8 +80,16 @@ python app.py
 ### 🏠 Homepage
 ![Homepage](images/homepage.png)
 
+### 🛍️ Products
+![Products](images/products.png)
+
+### 🏷️ Product Detail
+![Product Detail](images/product-detail.png)
+
 ### 🛒 Cart Page & Product Recommendations
-![Cart Page](images/cartpage.png)
+![Cart Page](images/cart-1.png)
+
+![Cart Page-2](images/cart-2.png)
 
 
 ## 📬 Contact
